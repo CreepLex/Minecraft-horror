@@ -2,11 +2,14 @@ package com.creepLex.nightmare;
 
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
+import net.minecraftforge.event.level.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -28,6 +31,7 @@ public class NightmareMod {
 
         @SubscribeEvent
         public static void onPlayerWakeUp(PlayerWakeUpEvent event) {
+
             if (!(event.getEntity() instanceof ServerPlayer player)) {
                 return;
             }
@@ -47,6 +51,24 @@ public class NightmareMod {
                     player.getYRot(),
                     player.getXRot()
             );
+        }
+
+        @SubscribeEvent
+        public static void onChunkLoad(ChunkEvent.Load event) {
+
+            if (!(event.getLevel() instanceof ServerLevel level)) {
+                return;
+            }
+
+            if (!level.dimension().equals(NIGHTMARE_DIMENSION)) {
+                return;
+            }
+
+            if (!(event.getChunk() instanceof LevelChunk chunk)) {
+                return;
+            }
+
+            BackroomsGenerator.generateRoom(level, chunk);
         }
     }
 }
